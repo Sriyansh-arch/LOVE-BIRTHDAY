@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>A Whisper of My Heart — Laboni (Sliding ref)</title>
+<style>
+/* ---------- fonts & palette ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500;700&display=swap');
+:root{
+  --ethereal-bg-start:#fdf6f7;
+  --ethereal-bg-end:#ffebee;
+  --card-petal-pink:#FFDDE2;
+  --card-rose-tint:#FFC0CB;
+  --text-velvet-rose:#7A4956;
+  --accent-blush:#E68A9E;
+  --pink-heart:#FF69B4;
+  --red-heart:#FF0000;
+  --header-font:'Great Vibes', cursive;
+  --body-font:'Cormorant Garamond', serif;
+  --card-width:88%;
+  --card-max-width:680px;
+}
+
+/* ---------- base ---------- */
+html,body{height:100%;margin:0;padding:0;font-family:var(--body-font);background:linear-gradient(135deg,var(--ethereal-bg-start),var(--ethereal-bg-end));color:var(--text-velvet-rose);display:flex;justify-content:center;align-items:center;user-select:none;touch-action:none;overflow:hidden}
+#external-greeting{position:absolute;top:12px;left:50%;transform:translateX(-50%);font-family:var(--header-font);font-size:2.6em;color:var(--accent-blush);z-index:60;text-shadow:0 0 6px rgba(255,255,255,0.85);pointer-events:none}
+
+/* ---------- background layers ---------- */
+.bokeh-container,.hearts-bg,.graphics-layer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.bokeh-light{position:absolute;border-radius:50%;filter:blur(16px);background:rgba(255,192,203,0.26);opacity:0;animation:bokehFloat linear infinite}
+@keyframes bokehFloat{0%{transform:translateY(110vh) scale(.6);opacity:0}20%{opacity:.85}80%{opacity:.45}100%{transform:translateY(-30vh) scale(1.25);opacity:0}}
+.heart-emoji{position:absolute;color:var(--pink-heart);font-size:1.4em;filter:drop-shadow(0 6px 14px rgba(255,105,180,0.12));opacity:.92;animation:heartFloat linear infinite}
+@keyframes heartFloat{0%{transform:translateY(110vh) rotate(0);opacity:0}15%{opacity:1}60%{transform:translateY(40vh) rotate(10deg)}100%{transform:translateY(-20vh) rotate(-12deg);opacity:0}}
+.petal{position:absolute;opacity:.95;filter:drop-shadow(0 8px 16px rgba(255,105,180,0.12));animation:petalFloat linear infinite}
+@keyframes petalFloat{0%{transform:translateY(120vh) rotate(0) scale(.8);opacity:0}15%{opacity:1}60%{transform:translateY(30vh) rotate(20deg) scale(1)}100%{transform:translateY(-10vh) rotate(-10deg) scale(.9);opacity:0}}
+.balloon{position:absolute;opacity:.95;filter:drop-shadow(0 12px 28px rgba(255,105,180,0.12));animation:balloonFloat linear infinite}
+@keyframes balloonFloat{0%{transform:translateY(120vh) rotate(-6deg) scale(.9);opacity:0}18%{opacity:1}60%{transform:translateY(35vh) rotate(8deg) scale(1)}100%{transform:translateY(-18vh) rotate(-3deg) scale(.95);opacity:0}}
+
+/* ---------- card stack ---------- */
+.card-stack-container{position:relative;width:var(--card-max-width);max-width:96%;height:90vh;max-height:640px;z-index:50;perspective:1200px;margin-top:22px}
+.slide-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:var(--card-width);max-width:var(--card-max-width);height:95%;max-height:95%;padding:30px 40px;box-sizing:border-box;background:linear-gradient(160deg,var(--card-petal-pink),var(--card-rose-tint));border-radius:40px;border:1px solid rgba(255,255,255,0.7);box-shadow:0 28px 80px rgba(255,105,180,0.18);text-align:center;display:flex;flex-direction:column;justify-content:space-between;transition:transform .36s cubic-bezier(.22,.9,.18,1),opacity .32s ease;cursor:grab;touch-action:none;z-index:10}
+.slide-card:active{cursor:grabbing}
+.slide-card h2{font-family:var(--header-font);font-size:4.4em;color:var(--accent-blush);margin:0 0 8px}
+.slide-card h3{font-size:2.2em;margin:0 0 8px}
+.slide-card p{font-size:1.45em;line-height:1.6;margin:8px 0}
+
+/* offsets */
+.below-stack-0{transform:translate(-52%,-48%) scale(.992);z-index:9}
+.below-stack-1{transform:translate(-54%,-46%) scale(.988);z-index:8}
+.below-stack-2{transform:translate(-56%,-44%) scale(.984);z-index:7}
+.below-stack-3{transform:translate(-58%,-42%) scale(.98);z-index:6}
+.slid-away{transform:translate(-50%,-50%) translateX(280%) scale(.22) rotate(40deg) !important;opacity:0 !important;pointer-events:none}
+
+/* ---------- images ---------- */
+.image-space{width:92%;height:260px;margin:10px auto 15px;background:rgba(255,255,255,0.92);border-radius:30px;overflow:hidden;border:2px solid var(--card-rose-tint);box-shadow:0 0 12px rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center}
+.image-space img{width:100%;height:100%;object-fit:cover;transform:translateZ(0);transition:transform .36s ease}
+#card-3 .image-space{width:88%;height:180px;max-height:40%}
+
+/* --------- dynamic hearts ---------- */
+.dynamic-edge-heart{position:absolute;font-size:1.1rem;color:var(--red-heart);opacity:0;filter:drop-shadow(0 0 6px rgba(255,0,0,0.6));pointer-events:none;animation:float-around-card 8s ease-in-out infinite;z-index:101}
+@keyframes float-around-card{0%{transform:translate(0,0) scale(.8) rotate(0);opacity:0}10%{opacity:1;transform:translate(50px,-20px) scale(1)}40%{transform:translate(120px,30px) scale(1.08)}70%{transform:translate(80px,80px) scale(.9)}100%{transform:translate(0,0) scale(.8);opacity:0}}
+
+.central-red-heart{font-size:2.2em;color:var(--red-heart);animation:heartPulse 3s ease-in-out infinite;margin-top:6px}
+@keyframes heartPulse{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+
+/* fixed visible signature */
+.fixed-signature{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:120;background:linear-gradient(90deg,rgba(255,249,250,0.98),rgba(255,243,246,0.98));color:var(--accent-blush);font-family:var(--header-font);font-size:1.05rem;padding:9px 16px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,0.08);pointer-events:none}
+
+/* responsive adjustments */
+@media(max-width:880px){.slide-card h2{font-size:2.8em}.image-space{height:220px}.fixed-signature{font-size:0.95rem;padding:8px 12px}}
+@media(max-width:480px){:root{--card-width:94%}.image-space{height:180px}.slide-card h2{font-size:2.0em}.slide-card p{font-size:1.12em}.fixed-signature{font-size:0.85rem;padding:7px 10px}}
+</style>
+</head>
+<body>
+
+  <div id="external-greeting">Happy Birthday Dear Lamborghini</div>
+
+  <div class="bokeh-container" id="bokeh"></div>
+  <div class="hearts-bg" id="hearts"></div>
+  <div class="graphics-layer" id="graphics"></div>
+
+  <div class="card-stack-container" id="stack">
+    <!-- Card 1 -->
+    <div class="slide-card" id="card-1" data-index="0">
+      <h2>A Celebration of You</h2>
+      <p>I am so very happy that we met. I loved talking to you. You were the first person I truly liked.</p>
+      <div class="image-space"><img src="card1_roses.png" alt="roses"></div>
+      <p style="font-style:italic;">Your heart holds the key to unlock each precious thought.</p>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="slide-card" id="card-2" data-index="1">
+      <h3>Echoes of Regret</h3>
+      <p>I left you because I felt I was not worthy of you. I have not liked any girl other than you since.</p>
+      <div class="image-space"><img src="card2_dewdrop.png" alt="dewdrop"></div>
+      <div class="central-red-heart">❤️</div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="slide-card" id="card-3" data-index="2">
+      <h3>A Tapestry of Memories</h3>
+      <p>I still miss our Durga Puja days and golgappa moments.
+      
+        <br>Pta H I never Wanted To Hurt You But It just happened </br>
+        And i Am Very Sorry, Not Expressing to be forgiven But to express to Show 
+        I Also Was In ....
+      </p>
+      <div class="image-space"><img src="card3_hands.png" alt="hands"></div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="slide-card" id="card-4" data-index="3">
+      <h3>The Blossom of Understanding</h3>
+      <p>Pta ni kyu bs mn kiya ki wish krde 
+        Iska Matlab Ye Ni H Ki Baat Wapas Krna h Just 
+        Kbhi Bhul Ni Payenge Tmko
+      </p>
+      <div class="image-space"><img src="card4_growth.png" alt="growth"></div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="slide-card" id="card-5" data-index="4">
+      <h2>A Final Blessing</h2>
+      <p>May your life be filled with peace, wonder, and joy.</p>
+      <p>Tm Kya Sochi Hm Tera Birthday Bhul jayenge Re, Ht Pagli</p>
+      <div class="image-space"><img src="card5_sunset.png" alt="sunset"></div>
+      <p style="font-family:var(--header-font);font-size:2.4em;color:var(--accent-blush)">Happy Birthday, dear Lamborghini. Bye bye.</p>
+    </div>
+  </div>
+
+  <div class="fixed-signature">Happy Birthday, dear Lamborghini. Bye bye.</div>
+
+<script>
+/* ===== decorations (unchanged) ===== */
+const heartsContainer = document.getElementById('hearts');
+const bokehContainer = document.getElementById('bokeh');
+const gfxContainer = document.getElementById('graphics');
+
+function spawnBokeh(){
+  const el = document.createElement('div');
+  el.className = 'bokeh-light';
+  const s = Math.random()*120 + 30;
+  el.style.width = el.style.height = s + 'px';
+  el.style.left = Math.random()*100 + 'vw';
+  el.style.top = Math.random()*100 + 'vh';
+  el.style.animationDuration = (10 + Math.random()*16) + 's';
+  bokehContainer.appendChild(el);
+  setTimeout(()=>{ try{ el.remove(); }catch(e){} }, (parseFloat(el.style.animationDuration) + 4)*1000);
+}
+for(let i=0;i<14;i++){ setTimeout(spawnBokeh, i*140); }
+setInterval(spawnBokeh, 1800);
+
+const HEARTS_INITIAL = 80;
+const HEARTS_TICK = 5;
+function spawnHeartsTick(){
+  const emojis = ['💖','💞','💘','💝'];
+  for(let i=0;i<HEARTS_TICK;i++){
+    const el = document.createElement('div');
+    el.className = 'heart-emoji';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.fontSize = (12 + Math.random()*30) + 'px';
+    el.style.animationDuration = (8 + Math.random()*12) + 's';
+    heartsContainer.appendChild(el);
+    setTimeout(()=>{ try{ el.remove(); }catch(e){} }, (parseFloat(el.style.animationDuration) + 4)*1000);
+  }
+  if(Math.random() < 0.7) spawnPetal();
+  if(Math.random() < 0.35) spawnBalloon();
+}
+function spawnPetal(){
+  const s = document.createElement('div');
+  s.className = 'petal';
+  const size = 18 + Math.random()*28;
+  s.style.width = s.style.height = size + 'px';
+  s.style.left = Math.random()*100 + 'vw';
+  s.style.animationDuration = (8 + Math.random()*14) + 's';
+  s.innerHTML = `<svg viewBox="0 0 24 24" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg"><path d="M12 2c4 0 8 4 8 8s-4 8-8 12S4 16 4 10 8 2 12 2z" fill="#ffd2dc" stroke="#ff9db0" stroke-width="0.6" /></svg>`;
+  gfxContainer.appendChild(s);
+  setTimeout(()=>{ try{ s.remove(); }catch(e){} }, (parseFloat(s.style.animationDuration) + 4)*1000);
+}
+function spawnBalloon(){
+  const b = document.createElement('div');
+  b.className = 'balloon';
+  const w = 22 + Math.random()*30;
+  b.style.width = (w) + 'px';
+  b.style.height = (w*1.25) + 'px';
+  b.style.left = Math.random()*100 + 'vw';
+  b.style.animationDuration = (10 + Math.random()*18) + 's';
+  b.innerHTML = `<svg viewBox="0 0 24 36" width="${w}" height="${w*1.25}" xmlns="http://www.w3.org/2000/svg"><ellipse cx="12" cy="12" rx="10" ry="9" fill="#ffd7e3" stroke="#ff9db0" stroke-width="0.8"/><line x1="12" y1="21" x2="12" y2="34" stroke="#ff9db0" stroke-width="0.8" /></svg>`;
+  gfxContainer.appendChild(b);
+  setTimeout(()=>{ try{ b.remove(); }catch(e){} }, (parseFloat(b.style.animationDuration) + 4)*1000);
+}
+for(let i=0;i<HEARTS_INITIAL;i++){ setTimeout(spawnHeartsTick, i*40); }
+setInterval(spawnHeartsTick, 900);
+
+/* ===== card stacking & dynamic edge hearts (unchanged) ===== */
+const cards = Array.from(document.querySelectorAll('.slide-card'));
+const totalCards = cards.length;
+let visibleIndex = 0;
+
+let activeEdgeHearts = [];
+function createDynamicEdgeHeart(cardElement){
+  const h = document.createElement('div');
+  h.className = 'dynamic-edge-heart';
+  h.innerHTML = '❤️';
+  const sx = (Math.random()*180 - 90);
+  const sy = (Math.random()*180 - 90);
+  h.style.left = `calc(50% + ${sx}px)`;
+  h.style.top = `calc(50% + ${sy}px)`;
+  h.style.animationDuration = (6 + Math.random()*5) + 's';
+  h.style.animationDelay = Math.random()*1.5 + 's';
+  h.style.fontSize = (12 + Math.random()*16) + 'px';
+  cardElement.appendChild(h);
+  activeEdgeHearts.push(h);
+  setTimeout(()=>{ try{ h.remove(); }catch(e){}; activeEdgeHearts = activeEdgeHearts.filter(x=>x!==h); }, 7500 + Math.random()*4000);
+}
+function manageDynamicEdgeHearts(){
+  activeEdgeHearts.forEach(h=>h.remove());
+  activeEdgeHearts = [];
+  const top = cards[visibleIndex];
+  if(top){
+    for(let i=0;i<3;i++) createDynamicEdgeHeart(top);
+  }
+}
+
+/* stacking classes */
+function applyStacking(){
+  cards.forEach((c,i)=>{
+    c.classList.remove('below-stack-0','below-stack-1','below-stack-2','below-stack-3','slid-away');
+    if(i < visibleIndex) {
+      c.classList.add('slid-away'); c.style.pointerEvents = 'none';
+    } else if(i === visibleIndex){
+      c.style.pointerEvents = 'auto'; c.style.zIndex = 100 + (totalCards - i); c.style.transform = ''; c.style.opacity = '1';
+    } else {
+      c.style.pointerEvents = 'none'; const pos = i - visibleIndex - 1; if(pos >= 0 && pos <= 3) c.classList.add(`below-stack-${pos}`);
+      c.style.zIndex = 60 + (totalCards - i); c.style.opacity = '1';
+    }
+  });
+  manageDynamicEdgeHearts();
+}
+applyStacking();
+
+/* ====== SWIPE LOGIC: REPLACED WITH YOUR REFERENCE (kept exactly) ====== */
+let startX = 0, endX = 0;
+const swipeThreshold = 50;
+
+/* handleStart */
+function handleStart(e) {
+  startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+}
+
+/* handleMove */
+function handleMove(e) {
+  if (e.type === 'mousemove' && e.buttons !== 1) return;
+  if (e.cancelable) e.preventDefault();
+}
+
+/* handleEnd */
+function handleEnd(e) {
+  endX = e.type === 'touchend' ? e.changedTouches[0].clientX : e.clientX;
+  const diffX = startX - endX;
+
+  if (Math.abs(diffX) > swipeThreshold) {
+    if (diffX > 0) {
+      if (visibleIndex < totalCards - 1) {
+        visibleIndex++;
+        applyStacking();
+      }
+    } else {
+      if (visibleIndex > 0) {
+        visibleIndex--;
+        applyStacking();
+      }
+    }
+  }
+}
+
+/* Add event listeners using your reference pattern */
+const cardStackContainer = document.querySelector('.card-stack-container');
+cardStackContainer.addEventListener('mousedown', handleStart);
+cardStackContainer.addEventListener('mousemove', handleMove);
+cardStackContainer.addEventListener('mouseup', handleEnd);
+cardStackContainer.addEventListener('mouseleave', (e) => { if (e.buttons === 1) handleEnd(e); });
+
+cardStackContainer.addEventListener('touchstart', handleStart, {passive:false});
+cardStackContainer.addEventListener('touchmove', handleMove, {passive:false});
+cardStackContainer.addEventListener('touchend', handleEnd, {passive:false});
+
+/* ensure initial state */
+applyStacking();
+
+</script>
+</body>
+</html>
